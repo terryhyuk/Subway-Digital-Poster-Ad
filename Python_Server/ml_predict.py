@@ -60,6 +60,7 @@ def jamsil(year, month, day, time):
     age_group_dict['30/40대'] = 0
     
     return age_group_dict
+    return age_group_dict
 
 def hongdae(year, month, day, time):
     """
