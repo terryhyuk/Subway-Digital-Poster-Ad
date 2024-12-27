@@ -110,11 +110,12 @@
 				};
 			};
 			buildConfigurationList = A24B22792D1D164700FB606D /* Build configuration list for PBXProject "Ad_Manager" */;
-			developmentRegion = en;
+			developmentRegion = ko;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
+				ko,
 			);
 			mainGroup = A24B22752D1D164700FB606D;
 			minimizedProjectReferenceProxies = 1;
