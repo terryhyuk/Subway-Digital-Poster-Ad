@@ -4,7 +4,7 @@ import SwiftUI
 struct ContentView: View {
     @FocusState var isTextFieldFocused: Bool
     @State private var id: String = "" // 사용자 ID 입력값
-    @State private var pw: String = "" // 비밀번호 입력값
+    @State private var password: String = "" // 비밀번호 입력값
     @State private var errorMessage: String? = nil // 에러 메시지 상태
     @State private var isLoggedIn: Bool = false // 로그인 성공 상태
 
@@ -33,7 +33,7 @@ struct ContentView: View {
                             .autocapitalization(.none) // 자동 대문자 비활성화
                             .disableAutocorrection(true) // 자동 완성 비활성화
 
-                        SecureField("Password", text: $pw)
+                        SecureField("Password", text: $password)
                             .padding()
                             .background(Color.gray.opacity(0.2))
                             .cornerRadius(30)
@@ -90,7 +90,7 @@ struct ContentView: View {
 
     // Firestore 로그인 함수
     func login() {
-        guard !id.isEmpty, !pw.isEmpty else {
+        guard !id.isEmpty, !password.isEmpty else {
             errorMessage = "ID와 Password를 입력하세요."
             return
         }
@@ -113,9 +113,9 @@ struct ContentView: View {
 
                 // 사용자 데이터 검증
                 if let userData = documents.first?.data(),
-                   let storedPassword = userData["pw"] as? String
+                   let storedPassword = userData["password"] as? String
                 {
-                    if storedPassword == pw {
+                    if storedPassword == password {
                         DispatchQueue.main.async {
                             isLoggedIn = true // 로그인 성공
                             errorMessage = nil
