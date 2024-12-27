@@ -58,3 +58,26 @@ def jamsil(year, month, day, time):
     age_group_dict['외국인'] = 0
     
     return age_group_dict
+
+def hongdae(year, month, day, time):
+    """
+    머신러닝의 홍대의 이용객 수를 예측한 값을 리턴하는 함수
+    Parameter : 년, 월, 일, 시간대
+    return : list(dict)
+    """
+
+    foreigner_youth = joblib.load("model/hongdae/gradient_boosting.joblib")
+    norm_woo = joblib.load("model/hongdae/random_forest.joblib")
+    
+    vac = 1 if month in [1, 2, 7, 8] else 0
+
+    foreigner_youth_result = foreigner_youth.predict(np.array([year, month, day, time, vac]).reshape(-1,5))
+    norm_woo_result = norm_woo.predict(np.array([year, month, day, time, vac]).reshape(-1,5))
+    # print(foreigner_youth_result[0])
+    # print([round(foreigner_youth_result[0][i]) for i in [0,2]]) # 외국인 청소년
+    # print(norm_woo_result[0])
+    # print([round(norm_woo_result[0][i]) for i in [1, 3, 4, 5]]) # 20, 30/40, 50
+    keys = ["우대권", "20대", "30/40대", "50대", "외국인", "청소년"]
+    result_list = [round(norm_woo_result[0][i]) for i in [1, 3, 4, 5]] + [round(foreigner_youth_result[0][i]) for i in [0,2]]
+    age_group_dict = {key: round(value) for key, value in zip(keys, result_list)}
+    return age_group_dict

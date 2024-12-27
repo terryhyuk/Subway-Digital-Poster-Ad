@@ -26,3 +26,12 @@ async def jamsilPredict(year: int = None, month :int = None, day :int = None, ti
     predict = ml_predict.jamsil(year, month, day, time)
     return [predict]
 
+@router.get("/hongdae_all_time")
+async def hongdaeAllTimePredict(year: int = None, month :int = None, day :int = None):
+    results = [ml_predict.jamsil(year, month, day, time) for time in list(range(5, 24)) + [0]]
+    return results
+
+@router.get("/hongdae")
+async def jamsilPredict(year: int = None, month :int = None, day :int = None, time :int = None):
+    predict = ml_predict.hongdae(year, month, day, time)
+    return [predict]
