@@ -1,3 +1,10 @@
+//
+//  ContentView.swift
+//  Ad_Manager
+//
+//  Created by aeong on 12/26/24.
+//
+
 import FirebaseFirestore
 import SwiftUI
 
@@ -7,6 +14,7 @@ struct ContentView: View {
     @State private var password: String = "" // 비밀번호 입력값
     @State private var errorMessage: String? = nil // 에러 메시지 상태
     @State private var isLoggedIn: Bool = false // 로그인 성공 상태
+    @State private var isSignUpPresented: Bool = false // SignUp 화면 전환 상태
 
     var body: some View {
         NavigationStack {
@@ -59,7 +67,7 @@ struct ContentView: View {
                         }
 
                         Button(action: {
-                            // SignUp 로직 추가 가능
+                            isSignUpPresented = true // SignUp 화면 전환
                         }) {
                             Text("SignUp")
                                 .bold()
@@ -68,6 +76,9 @@ struct ContentView: View {
                                 .background(Color.red.opacity(0.2)) // 배경색
                                 .foregroundColor(.black) // 텍스트 색상
                                 .cornerRadius(30)
+                        }
+                        .navigationDestination(isPresented: $isSignUpPresented) {
+                            SignUp()
                         }
                     }
                     .padding(.horizontal)
@@ -162,6 +173,7 @@ struct AnotherView: View {
     }
 }
 
+// 미리보기
 #Preview {
     ContentView()
 }
