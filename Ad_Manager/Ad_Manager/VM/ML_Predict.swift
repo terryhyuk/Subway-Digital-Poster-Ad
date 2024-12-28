@@ -29,7 +29,9 @@ class ML_Predict: ObservableObject {
                     print("Error fetching data: \(error.localizedDescription)")
                 }
             }, receiveValue: { [weak self] data in
+//                print("Received data: \(data)")
                 self?.ageData = data
+                print(self?.ageData)
             })
             .store(in: &cancellables)
     }
@@ -56,6 +58,8 @@ class ML_Predict: ObservableObject {
         
     private func processData(_ data: [[String: Double]]) {
         guard let firstEntry = data.first else { return }
-        self.chartData = firstEntry.map { PieChartData(category: $0.key, value: $0.value) }
+        // 키를 기준으로 정렬
+        let sortedEntries = firstEntry.sorted { $0.key < $1.key }
+        self.chartData = sortedEntries.map { PieChartData(category: $0.key, value: $0.value) }
     }
 }

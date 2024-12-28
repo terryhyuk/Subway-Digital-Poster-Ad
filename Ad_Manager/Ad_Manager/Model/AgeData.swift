@@ -7,21 +7,26 @@
 
 import Foundation
 
-struct AgeData: Codable {
-    let teen: Int
+struct AgeData: Codable,Identifiable {
+    var id = UUID() // 고유 식별자
+    var timePoint : Int
+    let youth: Int
     let twenties: Int
     let thirties: Int
     let forties: Int
-    let fiftiesOrMore: Int
+    let thirty_forty : Int
+    let fifties: Int
     let specialTicket: Int
     let foreigner: Int
     
     enum CodingKeys: String, CodingKey {
-        case teen = "10대"
+        case timePoint = "시간대"
+        case youth = "청소년"
         case twenties = "20대"
         case thirties = "30대"
         case forties = "40대"
-        case fiftiesOrMore = "50대 이상"
+        case thirty_forty = "30/40대"
+        case fifties = "50대"
         case specialTicket = "우대권"
         case foreigner = "외국인"
     }

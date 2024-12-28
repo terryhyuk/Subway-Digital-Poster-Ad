@@ -18,60 +18,109 @@ struct PredictView: View {
     @State var selectedHour : Int = Calendar.current.component(.hour, from: Date())
         
     var body: some View {
-        VStack(content: {
-            HStack(spacing: 40, content: {
-                dropDownBtn(options: options, selectedOptionIndex: $selectedOptionIndex, menuWdith: 150, buttonHeight: 50, maxItemDisplayed: 5)
-                DatePicker("", selection: $selectedDate, in: Date()...,  displayedComponents: [.date])
-                    .labelsHidden()
-                    .datePickerStyle(.compact)
-                    .onAppear(perform: {
-                        ml_Predict.fetchAllData(name: urlName[selectedOptionIndex], year: 2024, month: 12, day: 27)
-                    })
-            })
-            
-            if !ml_Predict.ageData.isEmpty{
-                Text("10대: \(ml_Predict.ageData[0].teen)")
-//                Text("20대: \(ml_Predict.ageData[0].twenties)")
-//                Text("30대: \(ml_Predict.ageData[0].thirties)")
-//                Text("40대: \(ml_Predict.ageData[0].forties)")
-//                Text("50대 이상: \(ml_Predict.ageData[0].fiftiesOrMore)")
-//                Text("우대권: \(ml_Predict.ageData[0].specialTicket)")
-                Text("외국인: \(ml_Predict.ageData[0].foreigner)")
-            }
-            
-            
-            Text("\(options[selectedOptionIndex])역 이용인원 예상 비율")
-            
-            Text("시간대별 예상 인원")
-            
-            Picker("Hour", selection: $selectedHour) {
-                        ForEach(5..<25) { hour in
-                            let hourText = hour == 5 ? "5시이전"
-                                : hour == 24 ? "24시이후"
-                                : String(format: "%02d시", hour)
-                            
-                            let tagValue = hour == 24 ? 0 : hour // hour가 24일 때 0으로 설정
-                            Text(hourText).tag(tagValue)
-                        }
+        ZStack(content: {
+            VStack(content: {
+                Text("\(options[selectedOptionIndex])역 이용인원 예상 비율")
+                    .font(.system(size: 22))
+                    .bold()
+                
+                Text("시간대별 예상 인원")
+                
+                // 라인차트 위치
+                if !ml_Predict.ageData.isEmpty{
+                    LineChartView(ageData: ml_Predict.ageData)
+                        .padding()
+                } else {
+                    ProgressView("데이터 로딩 중...")
+                        .progressViewStyle(CircularProgressViewStyle())
+                        .padding()
+                }
+                
+                Picker("Hour", selection: $selectedHour) {
+                            ForEach(5..<25) { hour in
+                                let hourText = hour == 5 ? "5시이전"
+                                    : hour == 24 ? "24시이후"
+                                    : String(format: "%02d시", hour)
+                                
+                                let tagValue = hour == 24 ? 0 : hour // hour가 24일 때 0으로 설정
+                                Text(hourText).tag(tagValue)
+                            }
 
-                    }
-            .onAppear(perform: {
-                ml_Predict.fetchData(name: urlName[selectedOptionIndex], year: 2024, month: 12, day: 27, time: selectedHour)
+                        }
+                .onChange(of: selectedHour) {
+                    chartDatas()
+                }
+                .pickerStyle(.wheel)
+                        .labelsHidden()
+                        .frame(width: 100, height: 100)
+                        .clipped()
+                
+                // 파이차트 위치
+                if !ml_Predict.chartData.isEmpty{
+                    PieChartView(chartData: ml_Predict.chartData)
+                        .frame(height: 300)
+                        .padding()
+                } else{
+                    ProgressView("데이터 로딩 중...")
+                        .progressViewStyle(CircularProgressViewStyle())
+                        .padding()
+                        .frame(height: 300)
+                        .padding()
+                }
             })
-            .pickerStyle(.wheel)
-                    .labelsHidden()
-                    .frame(width: 100, height: 100)
-                    .clipped()
-            
-            if !ml_Predict.chartData.isEmpty{
-                Text(ml_Predict.chartData[3].category)
-                Text(String(ml_Predict.chartData[0].value))
+            .padding(.top, 100)
+            .onAppear(perform: {
+                // LineChart
+                allChartData()
+                
+                // PieChart
+                chartDatas()
+            })
+            VStack {
+                HStack(spacing: 40, content: {
+                    // Station 선택
+                    dropDownBtn(options: options, selectedOptionIndex: $selectedOptionIndex, menuWdith: 150, buttonHeight: 50, maxItemDisplayed: 5)
+                        .onChange(of: selectedOptionIndex) {
+                            allChartData()
+                            chartDatas()
+                        }
+                    
+                    // 날짜 선택
+                    DatePicker("", selection: $selectedDate, in: Date()...,  displayedComponents: [.date])
+                        .onChange(of: selectedDate, {
+                            allChartData()
+                            chartDatas()
+                        })
+                        .labelsHidden()
+                        .datePickerStyle(.compact)
+                })
+                
+                Spacer()
             }
         })
+        
     }
     
     func allChartData(){
+        ml_Predict.ageData = []
         
+        let calendar = Calendar.current
+        let year = calendar.component(.year, from: selectedDate)
+        let month = calendar.component(.month, from: selectedDate)
+        let day = calendar.component(.day, from: selectedDate)
+        
+        ml_Predict.fetchAllData(name: urlName[selectedOptionIndex], year:year, month: month, day: day)
+
+    }
+    
+    func chartDatas(){
+        ml_Predict.chartData = []
+        let calendar = Calendar.current
+        let year = calendar.component(.year, from: selectedDate)
+        let month = calendar.component(.month, from: selectedDate)
+        let day = calendar.component(.day, from: selectedDate)
+        
+        ml_Predict.fetchData(name: urlName[selectedOptionIndex], year:year, month: month, day: day, time: selectedHour)
     }
 }
 
@@ -148,6 +197,90 @@ struct dropDownBtn:View {
         .zIndex(100)
     }
 }
+
+
+// 파이 차트 뷰
+struct PieChartView: View {
+    @StateObject private var ml_Predict = ML_Predict()
+    var chartData: [PieChartData]
+    
+    var body: some View {
+        VStack {
+            Chart {
+                // value가 0이 아닌 데이터만 표시
+                ForEach(chartData.filter { $0.value != 0 }, id: \.category) { name in
+                    SectorMark(
+                        angle: .value("age", name.value)
+                    )
+                    .foregroundStyle(by: .value("Type", name.category))
+                    .annotation(position: .overlay, content: {
+                        Text("\(Int(name.value))")
+                    })
+                }
+            }
+            .frame(height: 300)
+        }
+    }
+}
+
+// 라인 차트 뷰
+struct LineChartView: View {
+    @StateObject private var ml_Predict = ML_Predict()
+    let ageData: [AgeData]
+
+    var body: some View {
+        Chart {
+            // 각 카테고리별로 데이터 추가
+            ForEach(ageData) { data in
+                LineMark(
+                    x: .value("Time", data.timePoint),
+                    y: .value("Youth", data.youth)
+                )
+                .foregroundStyle(by: .value("Age", "청소년"))
+
+                LineMark(
+                    x: .value("Time", data.timePoint),
+                    y: .value("Twenties", data.twenties)
+                )
+                .foregroundStyle(by: .value("Age", "20대"))
+
+                LineMark(
+                    x: .value("Time", data.timePoint),
+                    y: .value("Thirties", data.thirties)
+                )
+                .foregroundStyle(by: .value("Age", "30대"))
+
+                LineMark(
+                    x: .value("Time", data.timePoint),
+                    y: .value("Forties", data.forties)
+                )
+                .foregroundStyle(by: .value("Age", "40대"))
+
+                LineMark(
+                    x: .value("Time", data.timePoint),
+                    y: .value("Fifties", data.fifties)
+                )
+                .foregroundStyle(by: .value("Age", "50대"))
+
+                LineMark(
+                    x: .value("Time", data.timePoint),
+                    y: .value("Special Ticket", data.specialTicket)
+                )
+                .foregroundStyle(by: .value("Age", "우대권"))
+
+                LineMark(
+                    x: .value("Time", data.timePoint),
+                    y: .value("Foreigner", data.foreigner)
+                )
+                .foregroundStyle(by: .value("Age", "외국인"))
+            }
+        }
+        .chartXScale(domain: 4...25) // X축 최소값을 5로 설정
+        .padding()
+    }
+}
+
+
 
 #Preview {
     PredictView()
