@@ -120,6 +120,7 @@ def gangnam(year, month, day, time):
     # print(year, month, day, time, w, weekend, holi)
     gangnam_result = gangnam_model.predict(np.array([year, month, day, time, w, weekend[0], holi]).reshape(-1,7))
     # print(gangnam_result)
-    keys = ["10대", "20대", "30대", "40대", "50대 이상", "우대권", "외국인"]
+    keys = ["청소년", "20대", "30대", "40대", "50대", "우대권", "외국인"]
     age_group_dict = {key: round(value) for key, value in zip(keys, gangnam_result[0])}
+    age_group_dict['30/40대'] = 0
     return age_group_dict
