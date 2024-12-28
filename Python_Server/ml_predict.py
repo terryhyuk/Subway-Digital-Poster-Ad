@@ -57,6 +57,7 @@ def jamsil(year, month, day, time):
     keys = ["20대", "30대", "40대", "50대", "청소년", "우대권"]
     age_group_dict = {key: round(value) for key, value in zip(keys, result_list)}
     age_group_dict['외국인'] = 0
+    age_group_dict['30/40대'] = 0
     
     return age_group_dict
 
@@ -81,6 +82,8 @@ def hongdae(year, month, day, time):
     keys = ["우대권", "20대", "30/40대", "50대", "외국인", "청소년"]
     result_list = [round(norm_woo_result[0][i]) for i in [1, 3, 4, 5]] + [round(foreigner_youth_result[0][i]) for i in [0,2]]
     age_group_dict = {key: round(value) for key, value in zip(keys, result_list)}
+    age_group_dict['30대'] = 0
+    age_group_dict['40대'] = 0
     return age_group_dict
 
 def gangnam(year, month, day, time):
@@ -97,6 +100,7 @@ def gangnam(year, month, day, time):
     # print(year, month, day, time, w, weekend, holi)
     gangnam_result = gangnam_model.predict(np.array([year, month, day, time, w, weekend[0], holi]).reshape(-1,7))
     # print(gangnam_result)
-    keys = ["10대", "20대", "30대", "40대", "50대 이상", "우대권", "외국인"]
+    keys = ["청소년", "20대", "30대", "40대", "50대", "우대권", "외국인"]
     age_group_dict = {key: round(value) for key, value in zip(keys, gangnam_result[0])}
+    age_group_dict['30/40대'] = 0
     return age_group_dict

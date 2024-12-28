@@ -18,6 +18,8 @@ router = APIRouter()
 @router.get("/jamsil_all_time")
 async def jamsilAllTimePredict(year: int = None, month :int = None, day :int = None):
     results = [ml_predict.jamsil(year, month, day, time) for time in list(range(5, 24)) + [0]]
+    for i, result in enumerate(results):
+        result["시간대"] = i+5
     return results
 
 @router.get("/jamsil")
@@ -28,6 +30,8 @@ async def jamsilPredict(year: int = None, month :int = None, day :int = None, ti
 @router.get("/hongdae_all_time")
 async def hongdaeAllTimePredict(year: int = None, month :int = None, day :int = None):
     results = [ml_predict.hongdae(year, month, day, time) for time in list(range(5, 24)) + [0]]
+    for i, result in enumerate(results):
+        result["시간대"] = i+5
     return results
 
 @router.get("/hongdae")
@@ -38,6 +42,8 @@ async def hongdaePredict(year: int = None, month :int = None, day :int = None, t
 @router.get("/gangnam_all_time")
 async def gangnamAllTimePredict(year: int = None, month :int = None, day :int = None):
     results = [ml_predict.gangnam(year, month, day, time) for time in list(range(5, 24)) + [0]]
+    for i, result in enumerate(results):
+        result["시간대"] = i+5
     return results
 
 @router.get("/gangnam")
