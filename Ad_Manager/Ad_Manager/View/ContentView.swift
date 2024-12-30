@@ -127,6 +127,7 @@ struct ContentView: View {
                    let storedPassword = userData["password"] as? String
                 {
                     if storedPassword == password {
+//                        userData["isAdmin"]
                         DispatchQueue.main.async {
                             isLoggedIn = true // 로그인 성공
                             errorMessage = nil

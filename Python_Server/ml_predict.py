@@ -72,10 +72,14 @@ def hongdae(year, month, day, time):
     foreigner_youth = joblib.load("model/hongdae/gradient_boosting.joblib")
     norm_woo = joblib.load("model/hongdae/random_forest.joblib")
     
+    selectDate = datetime(year,month,day,time)
+
+    y,m,d,w,h,holi,weekend = getDateInfo(selectDate)
+    
     vac = 1 if month in [1, 2, 7, 8] else 0
 
-    foreigner_youth_result = foreigner_youth.predict(np.array([year, month, day, time, vac]).reshape(-1,5))
-    norm_woo_result = norm_woo.predict(np.array([year, month, day, time, vac]).reshape(-1,5))
+    foreigner_youth_result = foreigner_youth.predict(np.array([year, month, w, time, vac]).reshape(-1,5))
+    norm_woo_result = norm_woo.predict(np.array([year, month, w, time, vac]).reshape(-1,5))
     # print(foreigner_youth_result[0])
     # print([round(foreigner_youth_result[0][i]) for i in [0,2]]) # 외국인 청소년
     # print(norm_woo_result[0])
