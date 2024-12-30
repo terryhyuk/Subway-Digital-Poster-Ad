@@ -110,23 +110,3 @@ def gangnam(year, month, day, time):
     age_group_dict['30/40대'] = 0
     age_group_dict = {key: (value if value >= 0 else 0) for key, value in age_group_dict.items()}
     return age_group_dict
-
-def gangnam(year, month, day, time):
-    """
-    머신러닝의 강남의 이용객 수를 예측한 값을 리턴하는 함수
-    Parameter : 년, 월, 일, 시간대
-    return : dict
-    """
-    selectDate = datetime(year,month,day,time)
-    y,m,d,w,h,holi,weekend = getDateInfo(selectDate)
-
-    gangnam_model = joblib.load("model/gangnam/model.joblib")
-
-    # print(year, month, day, time, w, weekend, holi)
-    gangnam_result = gangnam_model.predict(np.array([year, month, day, time, w, weekend[0], holi]).reshape(-1,7))
-    # print(gangnam_result)
-    keys = ["청소년", "20대", "30대", "40대", "50대", "우대권", "외국인"]
-    age_group_dict = {key: round(value) for key, value in zip(keys, gangnam_result[0])}
-    age_group_dict['30/40대'] = 0
-    age_group_dict = {key: (value if value >= 0 else 0) for key, value in age_group_dict.items()}
-    return age_group_dict
