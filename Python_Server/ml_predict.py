@@ -58,7 +58,7 @@ def jamsil(year, month, day, time):
     age_group_dict = {key: round(value) for key, value in zip(keys, result_list)}
     age_group_dict['외국인'] = 0
     age_group_dict['30/40대'] = 0
-    
+    age_group_dict = {key: (value if value >= 0 else 0) for key, value in age_group_dict.items()}
     return age_group_dict
     return age_group_dict
 
@@ -85,6 +85,7 @@ def hongdae(year, month, day, time):
     age_group_dict = {key: round(value) for key, value in zip(keys, result_list)}
     age_group_dict['30대'] = 0
     age_group_dict['40대'] = 0
+    age_group_dict = {key: (value if value >= 0 else 0) for key, value in age_group_dict.items()}
     return age_group_dict
 
 def gangnam(year, month, day, time):
@@ -104,6 +105,7 @@ def gangnam(year, month, day, time):
     keys = ["청소년", "20대", "30대", "40대", "50대", "우대권", "외국인"]
     age_group_dict = {key: round(value) for key, value in zip(keys, gangnam_result[0])}
     age_group_dict['30/40대'] = 0
+    age_group_dict = {key: (value if value >= 0 else 0) for key, value in age_group_dict.items()}
     return age_group_dict
 
 def gangnam(year, month, day, time):

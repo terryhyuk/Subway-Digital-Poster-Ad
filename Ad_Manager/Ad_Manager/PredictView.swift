@@ -29,46 +29,61 @@ struct PredictView: View {
                 // 라인차트 위치
                 if !ml_Predict.ageData.isEmpty{
                     LineChartView(ageData: ml_Predict.ageData)
+                        .frame(height: 200)
                         .padding()
                 } else {
                     ProgressView("데이터 로딩 중...")
                         .progressViewStyle(CircularProgressViewStyle())
+                        .frame(height: 200)
                         .padding()
                 }
                 
-                Picker("Hour", selection: $selectedHour) {
-                            ForEach(5..<25) { hour in
-                                let hourText = hour == 5 ? "5시이전"
+                ZStack {
+                    // 파이차트 위치
+                    if !ml_Predict.chartData.isEmpty{
+                        PieChartView(chartData: ml_Predict.chartData)
+                            .frame(height: 250)
+                            .padding()
+                    } else{
+                        ProgressView("데이터 로딩 중...")
+                            .progressViewStyle(CircularProgressViewStyle())
+                            .padding()
+                            .frame(height: 300)
+                            .padding()
+                    }
+                    
+                    VStack {
+                        HStack {
+                            Spacer()
+                            
+                            Picker("Hour", selection: $selectedHour) {
+                                ForEach(5..<25) { hour in
+                                    let hourText = hour == 5 ? "5시이전"
                                     : hour == 24 ? "24시이후"
                                     : String(format: "%02d시", hour)
+                                    
+                                    let tagValue = hour == 24 ? 0 : hour // hour가 24일 때 0으로 설정
+                                    Text(hourText).tag(tagValue)
+                                }
                                 
-                                let tagValue = hour == 24 ? 0 : hour // hour가 24일 때 0으로 설정
-                                Text(hourText).tag(tagValue)
                             }
-
+                            .onChange(of: selectedHour) {
+                                chartDatas()
+                            }
+                            .pickerStyle(.wheel)
+                            .labelsHidden()
+                            .frame(width: 100, height: 100)
+                            .clipped()
                         }
-                .onChange(of: selectedHour) {
-                    chartDatas()
+                        .padding(.trailing, 14)
+                        
+                        Spacer()
+                    }
                 }
-                .pickerStyle(.wheel)
-                        .labelsHidden()
-                        .frame(width: 100, height: 100)
-                        .clipped()
                 
-                // 파이차트 위치
-                if !ml_Predict.chartData.isEmpty{
-                    PieChartView(chartData: ml_Predict.chartData)
-                        .frame(height: 300)
-                        .padding()
-                } else{
-                    ProgressView("데이터 로딩 중...")
-                        .progressViewStyle(CircularProgressViewStyle())
-                        .padding()
-                        .frame(height: 300)
-                        .padding()
-                }
+                
             })
-            .padding(.top, 100)
+            .padding(.top, 70)
             .onAppear(perform: {
                 // LineChart
                 allChartData()
@@ -223,6 +238,23 @@ struct PieChartView: View {
     }
 }
 
+// AgeData 구조체에 나이대별 합계 확인 로직 추가
+extension AgeData {
+    func isNonZero(for category: String) -> Bool {
+        switch category {
+        case "청소년": return youth > 0
+        case "20대": return twenties > 0
+        case "30대": return thirties > 0
+        case "40대": return forties > 0
+        case "30/40대": return thirty_forty > 0
+        case "50대": return fifties > 0
+        case "우대권": return specialTicket > 0
+        case "외국인": return foreigner > 0
+        default: return false
+        }
+    }
+}
+
 // 라인 차트 뷰
 struct LineChartView: View {
     @StateObject private var ml_Predict = ML_Predict()
@@ -230,56 +262,76 @@ struct LineChartView: View {
 
     var body: some View {
         Chart {
-            // 각 카테고리별로 데이터 추가
             ForEach(ageData) { data in
-                LineMark(
-                    x: .value("Time", data.timePoint),
-                    y: .value("Youth", data.youth)
-                )
-                .foregroundStyle(by: .value("Age", "청소년"))
+                if data.isNonZero(for: "청소년") {
+                    LineMark(
+                        x: .value("Time", data.timePoint),
+                        y: .value("Youth", data.youth)
+                    )
+                    .foregroundStyle(by: .value("Age", "청소년"))
+                }
 
-                LineMark(
-                    x: .value("Time", data.timePoint),
-                    y: .value("Twenties", data.twenties)
-                )
-                .foregroundStyle(by: .value("Age", "20대"))
+                if data.isNonZero(for: "20대") {
+                    LineMark(
+                        x: .value("Time", data.timePoint),
+                        y: .value("Twenties", data.twenties)
+                    )
+                    .foregroundStyle(by: .value("Age", "20대"))
+                }
 
-                LineMark(
-                    x: .value("Time", data.timePoint),
-                    y: .value("Thirties", data.thirties)
-                )
-                .foregroundStyle(by: .value("Age", "30대"))
+                if data.isNonZero(for: "30대") {
+                    LineMark(
+                        x: .value("Time", data.timePoint),
+                        y: .value("Thirties", data.thirties)
+                    )
+                    .foregroundStyle(by: .value("Age", "30대"))
+                }
 
-                LineMark(
-                    x: .value("Time", data.timePoint),
-                    y: .value("Forties", data.forties)
-                )
-                .foregroundStyle(by: .value("Age", "40대"))
+                if data.isNonZero(for: "40대") {
+                    LineMark(
+                        x: .value("Time", data.timePoint),
+                        y: .value("Forties", data.forties)
+                    )
+                    .foregroundStyle(by: .value("Age", "40대"))
+                }
 
-                LineMark(
-                    x: .value("Time", data.timePoint),
-                    y: .value("Fifties", data.fifties)
-                )
-                .foregroundStyle(by: .value("Age", "50대"))
+                if data.isNonZero(for: "30/40대") {
+                    LineMark(
+                        x: .value("Time", data.timePoint),
+                        y: .value("30/40대", data.thirty_forty)
+                    )
+                    .foregroundStyle(by: .value("Age", "30/40대"))
+                }
 
-                LineMark(
-                    x: .value("Time", data.timePoint),
-                    y: .value("Special Ticket", data.specialTicket)
-                )
-                .foregroundStyle(by: .value("Age", "우대권"))
+                if data.isNonZero(for: "50대") {
+                    LineMark(
+                        x: .value("Time", data.timePoint),
+                        y: .value("Fifties", data.fifties)
+                    )
+                    .foregroundStyle(by: .value("Age", "50대"))
+                }
 
-                LineMark(
-                    x: .value("Time", data.timePoint),
-                    y: .value("Foreigner", data.foreigner)
-                )
-                .foregroundStyle(by: .value("Age", "외국인"))
+                if data.isNonZero(for: "우대권") {
+                    LineMark(
+                        x: .value("Time", data.timePoint),
+                        y: .value("Special Ticket", data.specialTicket)
+                    )
+                    .foregroundStyle(by: .value("Age", "우대권"))
+                }
+
+                if data.isNonZero(for: "외국인") {
+                    LineMark(
+                        x: .value("Time", data.timePoint),
+                        y: .value("Foreigner", data.foreigner)
+                    )
+                    .foregroundStyle(by: .value("Age", "외국인"))
+                }
             }
         }
         .chartXScale(domain: 4...25) // X축 최소값을 5로 설정
         .padding()
     }
 }
-
 
 
 #Preview {
