@@ -17,7 +17,7 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             if loginManager.isLoggedIn {
-                MainView()
+                TabbarView()
             } else {
                 VStack {
                     Spacer()
