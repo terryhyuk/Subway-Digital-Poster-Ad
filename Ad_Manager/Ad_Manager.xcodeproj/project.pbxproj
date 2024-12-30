@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		685A2C172D22485000F7926B /* InsertPost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 685A2C162D22485000F7926B /* InsertPost.swift */; };
 		A24B22932D1D16C500FB606D /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = A24B22922D1D16C500FB606D /* FirebaseAuth */; };
 		A24B22952D1D16C500FB606D /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = A24B22942D1D16C500FB606D /* FirebaseCore */; };
 		A24B22972D1D16C500FB606D /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = A24B22962D1D16C500FB606D /* FirebaseDatabase */; };
@@ -18,7 +17,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		685A2C162D22485000F7926B /* InsertPost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsertPost.swift; sourceTree = "<group>"; };
 		A24B227E2D1D164700FB606D /* Ad_Manager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ad_Manager.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -51,7 +49,6 @@
 		A24B22752D1D164700FB606D = {
 			isa = PBXGroup;
 			children = (
-				685A2C162D22485000F7926B /* InsertPost.swift */,
 				A24B22802D1D164700FB606D /* Ad_Manager */,
 				A24B227F2D1D164700FB606D /* Products */,
 			);
@@ -150,7 +147,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				685A2C172D22485000F7926B /* InsertPost.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
