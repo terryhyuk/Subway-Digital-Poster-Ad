@@ -88,6 +88,13 @@ struct ContentView: View {
 
                     Spacer()
                 }
+                .onAppear(perform: {
+                    if loginManager.isLoggedIn == false{
+                        id = ""
+                        password=""
+                        }
+                    }
+                )
                 .padding()
             }
         }
