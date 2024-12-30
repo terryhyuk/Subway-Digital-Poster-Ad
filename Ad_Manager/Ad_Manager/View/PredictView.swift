@@ -21,111 +21,116 @@ struct PredictView: View {
     @State var sum: Double = 0
     
     var body: some View {
-        ZStack(content: {
-            VStack(content: {
-                Text("\(options[selectedOptionIndex])역 이용인원 예상 비율")
-                    .font(.system(size: 22))
-                    .bold()
-                
-                Text("시간대별 예상 인원")
-                
-                // 라인차트 위치
-                if !ml_Predict.ageData.isEmpty {
-                    LineChartView(ageData: ml_Predict.ageData)
-                        .frame(height: 200)
-                        .padding()
-                } else {
-                    ProgressView("데이터 로딩 중...")
-                        .progressViewStyle(CircularProgressViewStyle())
-                        .frame(height: 200)
-                        .padding()
-                }
-                
-                ZStack {
-                    // 파이차트 위치
-                    if !pieDatas.isEmpty {
-                        PieChartView(chartData: pieDatas, sum: Int(sum))
-                            .frame(height: 250)
+        ScrollView {
+            ZStack(content: {
+                VStack(content: {
+                    Text("\(options[selectedOptionIndex])역 이용인원 예상 비율")
+                        .font(.system(size: 22))
+                        .bold()
+                    
+                    Text("시간대별 예상 인원")
+                    
+                    // 라인차트 위치
+                    if !ml_Predict.ageData.isEmpty {
+                        LineChartView(ageData: ml_Predict.ageData)
+                            .frame(height: 200)
                             .padding()
                     } else {
                         ProgressView("데이터 로딩 중...")
                             .progressViewStyle(CircularProgressViewStyle())
-                            .padding()
-                            .frame(height: 300)
+                            .frame(height: 200)
                             .padding()
                     }
                     
-                    VStack {
-                        HStack {
-                            Spacer()
-                            
-                            Picker("Hour", selection: $selectedHour) {
-                                ForEach(5..<25) { hour in
-                                    let hourText = hour == 5 ? "5시이전"
+                    ZStack {
+                        // 파이차트 위치
+                        if !pieDatas.isEmpty {
+                            PieChartView(chartData: pieDatas, sum: Int(sum))
+                                .frame(height: 250)
+                                .padding()
+                        } else {
+                            ProgressView("데이터 로딩 중...")
+                                .progressViewStyle(CircularProgressViewStyle())
+                                .padding()
+                                .frame(height: 300)
+                                .padding()
+                        }
+                        
+                        VStack {
+                            HStack {
+                                Spacer()
+                                
+                                Picker("Hour", selection: $selectedHour) {
+                                    ForEach(5..<25) { hour in
+                                        let hourText = hour == 5 ? "5시이전"
                                         : hour == 24 ? "24시이후"
                                         : String(format: "%02d시", hour)
-                                    
-                                    let tagValue = hour == 24 ? 0 : hour // hour가 24일 때 0으로 설정
-                                    Text(hourText).tag(tagValue)
+                                        
+                                        let tagValue = hour == 24 ? 0 : hour // hour가 24일 때 0으로 설정
+                                        Text(hourText).tag(tagValue)
+                                    }
                                 }
+                                .disabled(
+                                    pieDatas.isEmpty
+                                )
+                                .onChange(of: selectedHour) {
+                                    Task {
+                                        await chartDatas()
+                                        await predictPercent()
+                                    }
+                                }
+                                .pickerStyle(.wheel)
+                                .labelsHidden()
+                                .frame(width: 100, height: 100)
+                                .clipped()
                             }
-                            .onChange(of: selectedHour) {
+                            .padding(.trailing, 14)
+                            
+                            Spacer()
+                        }
+                    }
+                    
+                })
+                .padding(.top, 70)
+                .onAppear(perform: {
+                    // LineChart
+                    allChartData()
+                    
+                    // PieChart
+                    Task {
+                        await chartDatas()
+                        await predictPercent()
+                    }
+                })
+                VStack {
+                    HStack(spacing: 40, content: {
+                        // Station 선택
+                        dropDownBtn(options: options, selectedOptionIndex: $selectedOptionIndex, menuWdith: 150, buttonHeight: 50, maxItemDisplayed: 5)
+                            .onChange(of: selectedOptionIndex) {
+                                allChartData()
                                 Task {
                                     await chartDatas()
                                     await predictPercent()
                                 }
                             }
-                            .pickerStyle(.wheel)
-                            .labelsHidden()
-                            .frame(width: 100, height: 100)
-                            .clipped()
-                        }
-                        .padding(.trailing, 14)
                         
-                        Spacer()
-                    }
-                }
-                
-            })
-            .padding(.top, 70)
-            .onAppear(perform: {
-                // LineChart
-                allChartData()
-                
-                // PieChart
-                Task {
-                    await chartDatas()
-                    await predictPercent()
-                }
-            })
-            VStack {
-                HStack(spacing: 40, content: {
-                    // Station 선택
-                    dropDownBtn(options: options, selectedOptionIndex: $selectedOptionIndex, menuWdith: 150, buttonHeight: 50, maxItemDisplayed: 5)
-                        .onChange(of: selectedOptionIndex) {
-                            allChartData()
-                            Task {
-                                await chartDatas()
-                                await predictPercent()
+                        // 날짜 선택
+                        DatePicker("", selection: $selectedDate, in: Date()..., displayedComponents: [.date])
+                            .onChange(of: selectedDate) {
+                                allChartData()
+                                Task {
+                                    await chartDatas()
+                                    await predictPercent()
+                                }
                             }
-                        }
+                            .labelsHidden()
+                            .datePickerStyle(.compact)
+                    })
                     
-                    // 날짜 선택
-                    DatePicker("", selection: $selectedDate, in: Date()..., displayedComponents: [.date])
-                        .onChange(of: selectedDate) {
-                            allChartData()
-                            Task {
-                                await chartDatas()
-                                await predictPercent()
-                            }
-                        }
-                        .labelsHidden()
-                        .datePickerStyle(.compact)
-                })
-                
-                Spacer()
-            }
-        })
+                    Spacer()
+                }
+            })
+        }
     }
     
     func allChartData() {
@@ -272,7 +277,7 @@ struct PieChartView: View {
             }
             .chartForegroundStyleScale(domain: ageColors.keys.map { $0 }, range: ageColors.values.map { $0 })
             .chartBackground(alignment: .center, content: { _ in
-                Text("총 이용인원\n\(sum)\n")
+                Text("총 예측인원\n\(sum)\n")
                     .multilineTextAlignment(.center)
             })
             .frame(height: 300)
