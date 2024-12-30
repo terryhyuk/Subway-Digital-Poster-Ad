@@ -19,7 +19,7 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             if isLoggedIn {
-                MainView() // 로그인 성공 후 이동할 화면
+                TabbarView() // 로그인 성공 후 이동할 화면
             } else {
                 VStack {
                     Spacer()
@@ -145,33 +145,33 @@ struct ContentView: View {
     }
 }
 
-// 다음 화면(MainView) 예제
-struct MainView: View {
-    var body: some View {
-        VStack {
-            Text("메인 화면입니다!")
-                .font(.largeTitle)
-                .padding()
-
-            NavigationLink(destination: AnotherView()) {
-                Text("다음 화면으로 이동")
-                    .padding()
-                    .background(Color.green)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
-            }
-        }
-    }
-}
-
-// 추가 화면 예제
-struct AnotherView: View {
-    var body: some View {
-        Text("다음 화면입니다!")
-            .font(.title)
-            .padding()
-    }
-}
+//// 다음 화면(MainView) 예제
+//struct MainView: View {
+//    var body: some View {
+//        VStack {
+//            Text("메인 화면입니다!")
+//                .font(.largeTitle)
+//                .padding()
+//
+//            NavigationLink(destination: AnotherView()) {
+//                Text("다음 화면으로 이동")
+//                    .padding()
+//                    .background(Color.green)
+//                    .foregroundColor(.white)
+//                    .cornerRadius(10)
+//            }
+//        }
+//    }
+//}
+//
+//// 추가 화면 예제
+//struct AnotherView: View {
+//    var body: some View {
+//        Text("다음 화면입니다!")
+//            .font(.title)
+//            .padding()
+//    }
+//}
 
 // 미리보기
 #Preview {
