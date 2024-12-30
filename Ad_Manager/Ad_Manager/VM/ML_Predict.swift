@@ -5,8 +5,8 @@
 //  Created by 노민철 on 12/27/24.
 //
 
-import Foundation
 import Combine
+import Foundation
 
 class ML_Predict: ObservableObject {
     @Published var ageData: [AgeData] = []
@@ -14,7 +14,7 @@ class ML_Predict: ObservableObject {
     
     @Published var chartData: [PieChartData] = []
     
-    func fetchAllData(name:String, year:Int, month:Int, day:Int) {
+    func fetchAllData(name: String, year: Int, month: Int, day: Int) {
         guard let url = URL(string: "http://127.0.0.1:8000/ml/\(name)_all_time?year=\(year)&month=\(month)&day=\(day)") else { return }
         
         URLSession.shared.dataTaskPublisher(for: url)
@@ -37,7 +37,7 @@ class ML_Predict: ObservableObject {
     
 //    func fetchData(name:String, year:Int, month:Int, day:Int, time:Int) {
 //        guard let url = URL(string: "http://127.0.0.1:8000/ml/\(name)?year=\(year)&month=\(month)&day=\(day)&time=\(time)") else { return }
-//            
+//
 //            URLSession.shared.dataTaskPublisher(for: url)
 //                .map { $0.data }
 //                .decode(type: [[String: Double]].self, decoder: JSONDecoder())
@@ -82,6 +82,6 @@ class ML_Predict: ObservableObject {
         guard let firstEntry = data.first else { return }
         // 키를 기준으로 정렬
         let sortedEntries = firstEntry.sorted { $0.key < $1.key }
-        self.chartData = sortedEntries.map { PieChartData(category: $0.key, value: $0.value) }
+        chartData = sortedEntries.map { PieChartData(category: $0.key, value: $0.value) }
     }
 }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct PieChartData:Identifiable {
+struct PieChartData: Identifiable {
     let id = UUID()
     let category: String
     let value: Double

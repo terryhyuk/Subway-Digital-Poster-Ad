@@ -12,6 +12,11 @@ class LoginManager: ObservableObject {
     @Published var isLoggedIn: Bool = false
     @Published var errorMessage: String? = nil
 
+    // 전역적으로 관리할 사용자 정보
+    @Published var userId: String? = nil
+    @Published var isAdmin: Bool = false
+    @Published var userName: String? = nil
+
     func login(id: String, password: String) {
         guard !id.isEmpty, !password.isEmpty else {
             errorMessage = "ID와 Password를 입력하세요."
@@ -38,12 +43,17 @@ class LoginManager: ObservableObject {
                 }
 
                 if let userData = documents.first?.data(),
-                   let storedPassword = userData["password"] as? String
+                   let storedPassword = userData["password"] as? String,
+                   let isAdmin = userData["isAdmin"] as? Bool,
+                   let name = userData["name"] as? String
                 {
                     if storedPassword == password {
                         DispatchQueue.main.async {
                             self.isLoggedIn = true
                             self.errorMessage = nil
+                            self.userId = id
+                            self.isAdmin = isAdmin
+                            self.userName = name
                         }
                     } else {
                         DispatchQueue.main.async {
@@ -61,5 +71,8 @@ class LoginManager: ObservableObject {
     func logout() {
         isLoggedIn = false
         errorMessage = nil
+        userId = nil
+        isAdmin = false
+        userName = nil
     }
 }
