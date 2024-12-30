@@ -5,8 +5,8 @@
 //  Created by 노민철 on 12/27/24.
 //
 
-import SwiftUI
 import Charts
+import SwiftUI
 
 struct PredictView: View {
     @StateObject private var ml_Predict = ML_Predict()
@@ -15,10 +15,10 @@ struct PredictView: View {
     let urlName: [String] = ["gangnam", "jamsil", "hongdae"]
     @State var selectedOptionIndex: Int = 0
     @State var selectedDate = Date()
-    @State var selectedHour : Int = Calendar.current.component(.hour, from: Date())
+    @State var selectedHour: Int = Calendar.current.component(.hour, from: Date())
     
     @State var pieDatas: [PieChartData] = []
-    @State var sum:Double = 0
+    @State var sum: Double = 0
     
     var body: some View {
         ZStack(content: {
@@ -30,7 +30,7 @@ struct PredictView: View {
                 Text("시간대별 예상 인원")
                 
                 // 라인차트 위치
-                if !ml_Predict.ageData.isEmpty{
+                if !ml_Predict.ageData.isEmpty {
                     LineChartView(ageData: ml_Predict.ageData)
                         .frame(height: 200)
                         .padding()
@@ -43,11 +43,11 @@ struct PredictView: View {
                 
                 ZStack {
                     // 파이차트 위치
-                    if !pieDatas.isEmpty{
+                    if !pieDatas.isEmpty {
                         PieChartView(chartData: pieDatas, sum: Int(sum))
                             .frame(height: 250)
                             .padding()
-                    } else{
+                    } else {
                         ProgressView("데이터 로딩 중...")
                             .progressViewStyle(CircularProgressViewStyle())
                             .padding()
@@ -62,16 +62,15 @@ struct PredictView: View {
                             Picker("Hour", selection: $selectedHour) {
                                 ForEach(5..<25) { hour in
                                     let hourText = hour == 5 ? "5시이전"
-                                    : hour == 24 ? "24시이후"
-                                    : String(format: "%02d시", hour)
+                                        : hour == 24 ? "24시이후"
+                                        : String(format: "%02d시", hour)
                                     
                                     let tagValue = hour == 24 ? 0 : hour // hour가 24일 때 0으로 설정
                                     Text(hourText).tag(tagValue)
                                 }
-                                
                             }
                             .onChange(of: selectedHour) {
-                                Task{
+                                Task {
                                     await chartDatas()
                                     await predictPercent()
                                 }
@@ -87,7 +86,6 @@ struct PredictView: View {
                     }
                 }
                 
-                
             })
             .padding(.top, 70)
             .onAppear(perform: {
@@ -95,7 +93,7 @@ struct PredictView: View {
                 allChartData()
                 
                 // PieChart
-                Task{
+                Task {
                     await chartDatas()
                     await predictPercent()
                 }
@@ -106,21 +104,21 @@ struct PredictView: View {
                     dropDownBtn(options: options, selectedOptionIndex: $selectedOptionIndex, menuWdith: 150, buttonHeight: 50, maxItemDisplayed: 5)
                         .onChange(of: selectedOptionIndex) {
                             allChartData()
-                            Task{
+                            Task {
                                 await chartDatas()
                                 await predictPercent()
                             }
                         }
                     
                     // 날짜 선택
-                    DatePicker("", selection: $selectedDate, in: Date()...,  displayedComponents: [.date])
-                        .onChange(of: selectedDate, {
+                    DatePicker("", selection: $selectedDate, in: Date()..., displayedComponents: [.date])
+                        .onChange(of: selectedDate) {
                             allChartData()
-                            Task{
+                            Task {
                                 await chartDatas()
                                 await predictPercent()
                             }
-                        })
+                        }
                         .labelsHidden()
                         .datePickerStyle(.compact)
                 })
@@ -128,10 +126,9 @@ struct PredictView: View {
                 Spacer()
             }
         })
-        
     }
     
-    func allChartData(){
+    func allChartData() {
         ml_Predict.ageData = []
         
         let calendar = Calendar.current
@@ -139,8 +136,7 @@ struct PredictView: View {
         let month = calendar.component(.month, from: selectedDate)
         let day = calendar.component(.day, from: selectedDate)
         
-        ml_Predict.fetchAllData(name: urlName[selectedOptionIndex], year:year, month: month, day: day)
-
+        ml_Predict.fetchAllData(name: urlName[selectedOptionIndex], year: year, month: month, day: day)
     }
     
     func chartDatas() async {
@@ -151,23 +147,22 @@ struct PredictView: View {
         let month = calendar.component(.month, from: selectedDate)
         let day = calendar.component(.day, from: selectedDate)
         
-        await ml_Predict.fetchData(name: urlName[selectedOptionIndex], year:year, month: month, day: day, time: selectedHour)
+        await ml_Predict.fetchData(name: urlName[selectedOptionIndex], year: year, month: month, day: day, time: selectedHour)
     }
     
     func predictPercent() async {
         sum = 0
-        for pieData in ml_Predict.chartData{
+        for pieData in ml_Predict.chartData {
             sum += pieData.value
         }
         
-        for pieData in ml_Predict.chartData{
-            pieDatas.append(PieChartData(category: pieData.category, value: round((pieData.value / sum) * 1000)/10))
+        for pieData in ml_Predict.chartData {
+            pieDatas.append(PieChartData(category: pieData.category, value: round((pieData.value / sum) * 1000) / 10))
         }
     }
 }
 
-
-struct dropDownBtn:View {
+struct dropDownBtn: View {
     let options: [String]
     // 연결될 변수
     @Binding var selectedOptionIndex: Int
@@ -240,7 +235,6 @@ struct dropDownBtn:View {
     }
 }
 
-
 // 파이 차트 뷰
 struct PieChartView: View {
     @StateObject private var ml_Predict = ML_Predict()
@@ -277,13 +271,13 @@ struct PieChartView: View {
                 }
             }
             .chartForegroundStyleScale(domain: ageColors.keys.map { $0 }, range: ageColors.values.map { $0 })
-            .chartBackground(alignment: .center, content: {_ in
+            .chartBackground(alignment: .center, content: { _ in
                 Text("총 이용인원\n\(sum)\n")
                     .multilineTextAlignment(.center)
             })
             .frame(height: 300)
 //            .chartLegend(position: .bottom, alignment: .center, spacing: 16)
-            .chartLegend (position: .bottom, alignment: .center){
+            .chartLegend(position: .bottom, alignment: .center) {
                 HStack {
                     ForEach(ageColors.keys.sorted().filter { category in
                         chartData.first { $0.category == category }?.value != 0
@@ -302,7 +296,6 @@ struct PieChartView: View {
                     }
                 }
             }
-
         }
     }
     
@@ -315,14 +308,13 @@ extension Color {
     init(_ hex: UInt, alpha: Double = 1) {
         self.init(
             .sRGB,
-            red: Double((hex >> 16) & 0xff) / 255,
-            green: Double((hex >> 08) & 0xff) / 255,
-            blue: Double((hex >> 00) & 0xff) / 255,
+            red: Double((hex >> 16) & 0xFF) / 255,
+            green: Double((hex >> 08) & 0xFF) / 255,
+            blue: Double((hex >> 00) & 0xFF) / 255,
             opacity: alpha
         )
     }
 }
-
 
 // AgeData 구조체에 나이대별 합계 확인 로직 추가
 extension AgeData {
@@ -414,11 +406,10 @@ struct LineChartView: View {
                 }
             }
         }
-        .chartXScale(domain: 4...25) // X축 최소값을 5로 설정
+        .chartXScale(domain: 4 ... 25) // X축 최소값을 5로 설정
         .padding()
     }
 }
-
 
 #Preview {
     PredictView()

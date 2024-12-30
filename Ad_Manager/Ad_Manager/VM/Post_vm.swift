@@ -5,8 +5,8 @@
 //  Created by Marley Jeong on 12/30/24.
 //
 
-import Foundation
 import FirebaseFirestore
+import Foundation
 
 class FirestoreManager: ObservableObject {
     @Published var post: Post?
@@ -20,13 +20,14 @@ class FirestoreManager: ObservableObject {
         let date = timestamp.dateValue()
         return dateFormatter.string(from: date)
     }
+
     // List fetch
     func fetchPosts() {
         let db = Firestore.firestore()
-        db.collection("post").order(by: "writeTime", descending: true).addSnapshotListener { (querySnapshot, error) in
+        db.collection("post").order(by: "writeTime", descending: true).addSnapshotListener { querySnapshot, error in
             guard let documents = querySnapshot?.documents else { return }
             
-            self.posts = documents.map {doc -> Post in
+            self.posts = documents.map { doc -> Post in
                 let data = doc.data()
                 let timestamp = data["writeTime"] as? Timestamp ?? Timestamp()
                 let writeTime = self.formatTimestamp(timestamp)
@@ -45,18 +46,20 @@ class FirestoreManager: ObservableObject {
             }
         }
     }
+
     // Answer 입력/수정
     func updateAnswer(documentId: String, answer: String) {
-           let db = Firestore.firestore()
-           db.collection("post").document(documentId).updateData([
-               "answer": answer,
-               "isAnswer": true
-           ]) { error in
-               if let error = error {
-                   print("Error updating document: \(error)")
-               }
-           }
-       }
+        let db = Firestore.firestore()
+        db.collection("post").document(documentId).updateData([
+            "answer": answer,
+            "isAnswer": true
+        ]) { error in
+            if let error = error {
+                print("Error updating document: \(error)")
+            }
+        }
+    }
+
     // Insert
     func addPost(title: String, contents: String, author: String, station: String, ispublic: Bool) {
         let db = Firestore.firestore()
@@ -70,7 +73,7 @@ class FirestoreManager: ObservableObject {
             "isAnswer": false,
             "isPublic": ispublic,
             "writeTime": String(Date().description)
-        ] as [String : Any]
+        ] as [String: Any]
         
         db.collection("post").addDocument(data: newPost) { error in
             if let error = error {

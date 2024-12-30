@@ -5,15 +5,17 @@
 //  Created by LrZl on 12/26/24.
 //
 
-import SwiftUI
 import FirebaseFirestore
+import SwiftUI
 
 struct SignUp: View {
     // MARK: - Properties
+
     @Environment(\.dismiss) var dismiss
     @StateObject private var viewModel = SignUpViewModel()
     
     // MARK: - State Variables
+
     @State private var id = ""
     @State private var password = ""
     @State private var confirmPassword = ""
@@ -33,6 +35,7 @@ struct SignUp: View {
             ScrollView {
                 VStack(spacing: 40) {
                     // MARK: - Input Form Section
+
                     VStack(spacing: 40) {
                         // ID Input Section
                         HStack {
@@ -98,7 +101,6 @@ struct SignUp: View {
                             }
                         }
 
-                        
                         // User Info Section
                         TextField("Name", text: $name)
                             .disabled(!isNameFieldEnabled)
@@ -122,11 +124,13 @@ struct SignUp: View {
                     Spacer()
                     
                     // MARK: - Button Section
+
                     HStack(spacing: 20) {
                         Button("SignUp") {
                             // 모든 필수 필드 검증
                             if id.isEmpty || password.isEmpty || confirmPassword.isEmpty ||
-                               name.isEmpty || companyName.isEmpty || email.isEmpty || tel.isEmpty {
+                                name.isEmpty || companyName.isEmpty || email.isEmpty || tel.isEmpty
+                            {
                                 alertMessage = "모든 정보를 입력해주세요"
                                 showinAlert = true
                                 return

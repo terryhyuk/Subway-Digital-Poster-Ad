@@ -11,14 +11,14 @@ struct QList: View {
     @StateObject private var firestoreManager = FirestoreManager()
     @State private var selectedStation: String = "전체"
     let stations = ["전체", "강남", "잠실", "홍대입구"]
-    
+
     var filteredPosts: [Post] {
         if selectedStation == "전체" {
             return firestoreManager.posts
         }
         return firestoreManager.posts.filter { $0.station == selectedStation }
     }
-    
+
     var body: some View {
         NavigationStack {
             VStack {
@@ -56,11 +56,11 @@ struct QList: View {
                                 .frame(width: 70)
                                 .padding(.vertical)
                             VStack(alignment: .leading, spacing: 8) {
-                                    Text(post.title)
-                                        .font(.headline)
-                                    Text(post.writeTime)
-                                        .font(.caption)
-                                        .foregroundColor(.gray)
+                                Text(post.title)
+                                    .font(.headline)
+                                Text(post.writeTime)
+                                    .font(.caption)
+                                    .foregroundColor(.gray)
                             }
                             .frame(width: 130, alignment: .leading)
                             VStack(spacing: 9) {
