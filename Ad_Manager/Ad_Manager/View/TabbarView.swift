@@ -39,7 +39,7 @@ struct TabbarView: View {
             })
         }
     }
-    
+
     private func getNavigationTitle() -> String {
         switch selection {
         case 0:

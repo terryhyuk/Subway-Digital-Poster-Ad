@@ -9,17 +9,16 @@ import SwiftUI
 
 struct Answer: View {
     @EnvironmentObject var loginManager: LoginManager
-//    @StateObject private var loginManager = LoginManager()
     @StateObject private var firestoreManager = FirestoreManager()
     @State private var title: String = ""
     @State private var content: String = ""
     @State private var answer: String = ""
     @FocusState var isTextFieldFocused: Bool
-    
+
     let post: Post
-    
+
     @Environment(\.dismiss) private var dismiss
-    
+
     init(post: Post) {
         self.post = post
         // State 변수 초기화
@@ -27,90 +26,85 @@ struct Answer: View {
         _content = State(initialValue: post.contents)
         _answer = State(initialValue: post.answer)
     }
-      var body: some View {
-          
-          NavigationStack {
-              Form {
-                  HStack(content: {
-                      Spacer()
-                      Text("지하철역:")
-                          .bold()
-                      Text(post.station)
-                      Spacer()
-                      Text("작성자:")
-                          .bold()
-                      Text(post.author)
-                  })
-                  Section (header: Text("문의제목").bold().font(.callout)){
-                      TextField("", text: $title)
-                          .frame(height: 50)
-                          .textFieldStyle(.roundedBorder)
-//                          .overlay(
-//                              RoundedRectangle(cornerRadius: 12)
-//                                  .stroke(.gray, lineWidth: 0.4)
-//                          )
-                          .disabled(true)
-                  }
-                  Section(header: Text("문의내용").bold().font(.callout)) {
-                      TextField("", text: $content)
-                          .frame(height: 50)
-                          .textFieldStyle(.roundedBorder)
-                          .disabled(true)
-                  }
-                  
-                  Section(header: Text("답변").bold().font(.callout)) {
-                      TextEditor(text: $answer)
-                          .frame(minHeight: 200)
-                          .keyboardType(.default)
-                          .textEditorStyle(.automatic)
-                          .disabled(!loginManager.isAdmin)
-                          .overlay(
-                              RoundedRectangle(cornerRadius: 12)
-                                  .stroke(.black, lineWidth: 0.6)
-                          )
-                          .focused($isTextFieldFocused)
-                  }
-                  HStack (spacing: 30, content: {
-                      Spacer()
-                      Button(action: {
-                          // Submit action
-                          if !answer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                              firestoreManager.updateAnswer(documentId: post.id, answer: answer.trimmingCharacters(in: .whitespacesAndNewlines))
-                              isTextFieldFocused = false
-                              dismiss()
-                          }
-                      }) {
-                          Text("Submit/Edit")
-                              .frame(width: 100)
-                              .padding()
-                              .background(Color(.systemTeal).opacity(0.2))
-                              .foregroundStyle(.black.opacity(0.6))
-                              .cornerRadius(30)
-                      }
-                      Button(action: {
-                          // Cancel action
-                          dismiss()
-                      }) {
-                          Text("Cancel")
-                              .frame(width: 100)
-                              .padding()
-                              .background(Color(.systemPink).opacity(0.2))
-                              .foregroundStyle(.black.opacity(0.6))
-                              .cornerRadius(30)
-                      }
-                      Spacer()
-                  })
-                  .listRowBackground(Color.clear)
-              }
-              .navigationTitle("답변하기")
-              .navigationBarTitleDisplayMode(.inline)
-              .scrollContentBackground(.hidden)
-              .listSectionSpacing(.compact)
-              
-          }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                HStack(content: {
+                    Spacer()
+                    Text("지하철역:")
+                        .bold()
+                    Text(post.station)
+                    Spacer()
+                    Text("작성자:")
+                        .bold()
+                    Text(post.author)
+                })
+                Section(header: Text("문의제목").bold().font(.callout)) {
+                    TextField("", text: $title)
+                        .frame(height: 50)
+                        .textFieldStyle(.roundedBorder)
+                        .disabled(true)
+                }
+                Section(header: Text("문의내용").bold().font(.callout)) {
+                    TextField("", text: $content)
+                        .frame(height: 50)
+                        .textFieldStyle(.roundedBorder)
+                        .disabled(true)
+                }
+
+                Section(header: Text("답변").bold().font(.callout)) {
+                    TextEditor(text: $answer)
+                        .frame(minHeight: 200)
+                        .keyboardType(.default)
+                        .textEditorStyle(.automatic)
+                        .disabled(!loginManager.isAdmin)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(.black, lineWidth: 0.6)
+                        )
+                        .focused($isTextFieldFocused)
+                }
+                HStack(spacing: 30, content: {
+                    Spacer()
+                    Button(action: {
+                        // Submit action
+                        if !answer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                            firestoreManager.updateAnswer(documentId: post.id, answer: answer.trimmingCharacters(in: .whitespacesAndNewlines))
+                            isTextFieldFocused = false
+                            dismiss()
+                        }
+                    }) {
+                        Text("Submit/Edit")
+                            .frame(width: 100)
+                            .padding()
+                            .background(Color(.systemTeal).opacity(0.2))
+                            .foregroundStyle(.black.opacity(0.6))
+                            .cornerRadius(30)
+                    }
+                    Button(action: {
+                        // Cancel action
+                        dismiss()
+                    }) {
+                        Text("Cancel")
+                            .frame(width: 100)
+                            .padding()
+                            .background(Color(.systemPink).opacity(0.2))
+                            .foregroundStyle(.black.opacity(0.6))
+                            .cornerRadius(30)
+                    }
+                    Spacer()
+                })
+                .listRowBackground(Color.clear)
+            }
+            .navigationTitle("답변하기")
+            .navigationBarTitleDisplayMode(.inline)
+            .scrollContentBackground(.hidden)
+            .listSectionSpacing(.compact)
+        }
 //          .listRowSpacing(.compact)
-      }
-  }
+    }
+}
 
 #Preview {
     Answer(post: Post(

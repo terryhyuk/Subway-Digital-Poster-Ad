@@ -84,14 +84,6 @@ struct QList: View {
             .navigationTitle("Q&A 목록")
             .navigationBarTitleDisplayMode(.inline)
             .scrollContentBackground(.hidden)
-//            .toolbar(content: {
-//                ToolbarItem(placement: .bottomBar, content: {
-//                    NavigationLink(destination: InsertPost(), label: {
-//                        Image(systemName: "plus.circle")
-//                        Text("문의하기")
-//                    })
-//                })
-//            })
             .onAppear {
                 firestoreManager.fetchPosts()
             }

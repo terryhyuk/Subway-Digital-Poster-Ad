@@ -15,7 +15,7 @@ struct InsertPost: View {
     @State private var station: String = ""
     @State private var answer: String = ""
     @FocusState var isTextFieldFocused: Bool
-    
+
     var body: some View {
         Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
     }

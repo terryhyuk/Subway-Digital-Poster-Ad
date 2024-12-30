@@ -29,31 +29,10 @@ class ML_Predict: ObservableObject {
                     print("Error fetching data: \(error.localizedDescription)")
                 }
             }, receiveValue: { [weak self] data in
-//                print("Received data: \(data)")
                 self?.ageData = data
             })
             .store(in: &cancellables)
     }
-    
-//    func fetchData(name:String, year:Int, month:Int, day:Int, time:Int) {
-//        guard let url = URL(string: "http://127.0.0.1:8000/ml/\(name)?year=\(year)&month=\(month)&day=\(day)&time=\(time)") else { return }
-//
-//            URLSession.shared.dataTaskPublisher(for: url)
-//                .map { $0.data }
-//                .decode(type: [[String: Double]].self, decoder: JSONDecoder())
-//                .receive(on: DispatchQueue.main)
-//                .sink(receiveCompletion: { completion in
-//                    switch completion {
-//                    case .finished:
-//                        break
-//                    case .failure(let error):
-//                        print("Error fetching data: \(error.localizedDescription)")
-//                    }
-//                }, receiveValue: { [weak self] data in
-//                    self?.processData(data)
-//                })
-//                .store(in: &cancellables)
-//    }
     
     func fetchData(name: String, year: Int, month: Int, day: Int, time: Int) async {
         guard let url = URL(string: "http://127.0.0.1:8000/ml/\(name)?year=\(year)&month=\(month)&day=\(day)&time=\(time)") else {
