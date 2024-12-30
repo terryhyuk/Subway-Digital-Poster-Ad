@@ -31,7 +31,7 @@ class ML_Predict: ObservableObject {
             }, receiveValue: { [weak self] data in
 //                print("Received data: \(data)")
                 self?.ageData = data
-                print(self?.ageData)
+//                print(self?.ageData)
             })
             .store(in: &cancellables)
     }
