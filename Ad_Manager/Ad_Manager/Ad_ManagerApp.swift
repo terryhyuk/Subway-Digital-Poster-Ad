@@ -24,8 +24,7 @@ struct Ad_ManagerApp: App {
     
     var body: some Scene {
         WindowGroup {
-//            ContentView()
-            PredictView()
+            ContentView()
         }
     }
 }
