@@ -27,10 +27,10 @@ struct Ad_ManagerApp: App {
 
     var body: some Scene {
         WindowGroup {
-            NavigationStack {
+//            NavigationStack {
                 ContentView()
                     .environmentObject(loginManager)
-            }
+//            }
         }
     }
 }

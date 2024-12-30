@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct Answer: View {
+    @EnvironmentObject var loginManager: LoginManager
+//    @StateObject private var loginManager = LoginManager()
     @StateObject private var firestoreManager = FirestoreManager()
     @State private var title: String = ""
     @State private var content: String = ""
@@ -25,7 +27,6 @@ struct Answer: View {
         _content = State(initialValue: post.contents)
         _answer = State(initialValue: post.answer)
     }
-      
       var body: some View {
           
           NavigationStack {
@@ -62,6 +63,7 @@ struct Answer: View {
                           .frame(minHeight: 200)
                           .keyboardType(.default)
                           .textEditorStyle(.automatic)
+                          .disabled(!loginManager.isAdmin)
                           .overlay(
                               RoundedRectangle(cornerRadius: 12)
                                   .stroke(.black, lineWidth: 0.6)
