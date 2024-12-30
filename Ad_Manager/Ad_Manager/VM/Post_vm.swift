@@ -11,7 +11,7 @@ import Foundation
 class FirestoreManager: ObservableObject {
     @Published var post: Post?
     @Published var posts: [Post] = []
-    
+
     func formatTimestamp(_ timestamp: Timestamp) -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale(identifier: "ko_KR")
@@ -26,12 +26,12 @@ class FirestoreManager: ObservableObject {
         let db = Firestore.firestore()
         db.collection("post").order(by: "writeTime", descending: true).addSnapshotListener { querySnapshot, error in
             guard let documents = querySnapshot?.documents else { return }
-            
+
             self.posts = documents.map { doc -> Post in
                 let data = doc.data()
                 let timestamp = data["writeTime"] as? Timestamp ?? Timestamp()
                 let writeTime = self.formatTimestamp(timestamp)
-                
+
                 return Post(
                     id: doc.documentID,
                     answer: data["answer"] as? String ?? "",
@@ -63,7 +63,7 @@ class FirestoreManager: ObservableObject {
     // Insert
     func addPost(title: String, contents: String, author: String, station: String, ispublic: Bool) {
         let db = Firestore.firestore()
-        
+
         let newPost = [
             "title": title,
             "contents": contents,
@@ -74,7 +74,7 @@ class FirestoreManager: ObservableObject {
             "isPublic": ispublic,
             "writeTime": String(Date().description)
         ] as [String: Any]
-        
+
         db.collection("post").addDocument(data: newPost) { error in
             if let error = error {
                 print("Error adding document: \(error)")

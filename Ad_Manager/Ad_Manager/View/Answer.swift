@@ -8,16 +8,17 @@
 import SwiftUI
 
 struct Answer: View {
+    @EnvironmentObject var loginManager: LoginManager
     @StateObject private var firestoreManager = FirestoreManager()
     @State private var title: String = ""
     @State private var content: String = ""
     @State private var answer: String = ""
     @FocusState var isTextFieldFocused: Bool
-    
+
     let post: Post
-    
+
     @Environment(\.dismiss) private var dismiss
-    
+
     init(post: Post) {
         self.post = post
         // State 변수 초기화
@@ -25,7 +26,7 @@ struct Answer: View {
         _content = State(initialValue: post.contents)
         _answer = State(initialValue: post.answer)
     }
-      
+
     var body: some View {
         NavigationStack {
             Form {
@@ -43,10 +44,6 @@ struct Answer: View {
                     TextField("", text: $title)
                         .frame(height: 50)
                         .textFieldStyle(.roundedBorder)
-//                          .overlay(
-//                              RoundedRectangle(cornerRadius: 12)
-//                                  .stroke(.gray, lineWidth: 0.4)
-//                          )
                         .disabled(true)
                 }
                 Section(header: Text("문의내용").bold().font(.callout)) {
@@ -55,12 +52,13 @@ struct Answer: View {
                         .textFieldStyle(.roundedBorder)
                         .disabled(true)
                 }
-                  
+
                 Section(header: Text("답변").bold().font(.callout)) {
                     TextEditor(text: $answer)
                         .frame(minHeight: 200)
                         .keyboardType(.default)
                         .textEditorStyle(.automatic)
+                        .disabled(!loginManager.isAdmin)
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
                                 .stroke(.black, lineWidth: 0.6)

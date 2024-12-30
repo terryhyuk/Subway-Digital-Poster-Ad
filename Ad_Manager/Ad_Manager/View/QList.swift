@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct QList: View {
+    @EnvironmentObject var loginManager: LoginManager
     @StateObject private var firestoreManager = FirestoreManager()
     @State private var selectedStation: String = "전체"
     let stations = ["전체", "강남", "잠실", "홍대입구"]
@@ -47,6 +48,11 @@ struct QList: View {
                         .padding(.horizontal)
                     }
                     Spacer()
+                    NavigationLink(destination: InsertPost()) {
+                        Text("문의하기")
+                            .buttonStyle(.borderedProminent)
+                    }
+                    .padding(.horizontal)
                 }
                 // 필터링된 리스트
                 List(filteredPosts) { post in
@@ -78,14 +84,6 @@ struct QList: View {
             .navigationTitle("Q&A 목록")
             .navigationBarTitleDisplayMode(.inline)
             .scrollContentBackground(.hidden)
-            .toolbar(content: {
-                ToolbarItem(placement: .bottomBar, content: {
-                    NavigationLink(destination: InsertPost(), label: {
-                        Image(systemName: "plus.circle")
-                        Text("문의하기")
-                    })
-                })
-            })
             .onAppear {
                 firestoreManager.fetchPosts()
             }
