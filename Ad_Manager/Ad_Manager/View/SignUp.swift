@@ -5,17 +5,15 @@
 //  Created by LrZl on 12/26/24.
 //
 
-import FirebaseFirestore
 import SwiftUI
+import Combine
 
 struct SignUp: View {
-    // MARK: - Properties
-
     @Environment(\.dismiss) var dismiss
     @StateObject private var viewModel = SignUpViewModel()
     
-    // MARK: - State Variables
-
+    @FocusState var isTextFieldFocused: Bool
+    
     @State private var id = ""
     @State private var password = ""
     @State private var confirmPassword = ""
@@ -30,14 +28,14 @@ struct SignUp: View {
     @State private var isNameFieldEnabled = false
     @State private var showPasswordConfirmMessage = false
     
+    @State private var keyboardOffset: CGFloat = 0
+
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 40) {
-                    // MARK: - Input Form Section
-
+                    // Input Form Section
                     VStack(spacing: 40) {
-                        // ID Input Section
                         HStack {
                             TextField("ID", text: $id)
                                 .autocapitalization(.none)
@@ -70,8 +68,7 @@ struct SignUp: View {
                             .background(Color(red: 255/255, green: 218/255, blue: 214/255))
                             .cornerRadius(20)
                         }
-                    
-                        // Password Section
+                        
                         VStack(spacing: 25) {
                             SecureField("Password", text: $password)
                                 .disabled(!isPasswordFieldEnabled)
@@ -100,15 +97,13 @@ struct SignUp: View {
                                     .font(.caption)
                             }
                         }
-
-                        // User Info Section
+                        
                         TextField("Name", text: $name)
                             .disabled(!isNameFieldEnabled)
                         
                         TextField("Company Name", text: $companyName)
                             .disabled(!isNameFieldEnabled)
                         
-                        // Contact Info Section
                         TextField("Email", text: $email)
                             .disabled(!isNameFieldEnabled)
                             .keyboardType(.emailAddress)
@@ -120,14 +115,10 @@ struct SignUp: View {
                     }
                     .textFieldStyle(UnderlineTextFieldStyle())
                     .padding(.horizontal)
+                    .padding(.vertical, 50)
                     
-                    Spacer()
-                    
-                    // MARK: - Button Section
-
                     HStack(spacing: 20) {
                         Button("SignUp") {
-                            // 모든 필수 필드 검증
                             if id.isEmpty || password.isEmpty || confirmPassword.isEmpty ||
                                 name.isEmpty || companyName.isEmpty || email.isEmpty || tel.isEmpty
                             {
@@ -171,6 +162,12 @@ struct SignUp: View {
                     .padding(.bottom, 30)
                 }
             }
+            .padding(.bottom, keyboardOffset) // Adjust ScrollView's bottom padding
+            .onReceive(Publishers.keyboardHeight) { height in
+                withAnimation {
+                    keyboardOffset = height
+                }
+            }
             .navigationTitle("Create Account")
             .navigationBarTitleDisplayMode(.inline)
             .alert("알림", isPresented: $showinAlert) {
@@ -182,9 +179,9 @@ struct SignUp: View {
             } message: {
                 Text(alertMessage)
             }
-
             .ignoresSafeArea(.keyboard, edges: .bottom)
         }
+        
     }
 }
 
@@ -196,6 +193,16 @@ struct UnderlineTextFieldStyle: TextFieldStyle {
                 .frame(height: 1)
                 .foregroundColor(.gray.opacity(0.3))
         }
+    }
+}
+
+extension Publishers {
+    static var keyboardHeight: AnyPublisher<CGFloat, Never> {
+        let willShow = NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)
+            .map { ($0.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect)?.height ?? 0 }
+        let willHide = NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)
+            .map { _ in CGFloat(0) }
+        return MergeMany(willShow, willHide).eraseToAnyPublisher()
     }
 }
 
