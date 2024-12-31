@@ -65,37 +65,57 @@ struct Answer: View {
                         )
                         .focused($isTextFieldFocused)
                 }
-                HStack(spacing: 30, content: {
-                    Spacer()
-                    Button(action: {
-                        // Submit action
-                        if !answer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                            firestoreManager.updateAnswer(documentId: post.id, answer: answer.trimmingCharacters(in: .whitespacesAndNewlines))
-                            isTextFieldFocused = false
-                            dismiss()
+                
+                if loginManager.isAdmin {
+                    HStack(spacing: 30, content: {
+                        Spacer()
+                        Button(action: {
+                            // Submit action
+                            if !answer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                                firestoreManager.updateAnswer(documentId: post.id, answer: answer.trimmingCharacters(in: .whitespacesAndNewlines))
+                                isTextFieldFocused = false
+                                dismiss()
+                            }
+                        }) {
+                            Text("Submit/Edit")
+                                .frame(width: 100)
+                                .padding()
+                                .background(Color(.systemTeal).opacity(0.2))
+                                .foregroundStyle(.black.opacity(0.6))
+                                .cornerRadius(30)
                         }
-                    }) {
-                        Text("Submit/Edit")
-                            .frame(width: 100)
-                            .padding()
-                            .background(Color(.systemTeal).opacity(0.2))
-                            .foregroundStyle(.black.opacity(0.6))
-                            .cornerRadius(30)
+                        Button(action: {
+                            // Cancel action
+                            dismiss()
+                        }) {
+                            Text("Cancel")
+                                .frame(width: 100)
+                                .padding()
+                                .background(Color(.systemPink).opacity(0.2))
+                                .foregroundStyle(.black.opacity(0.6))
+                                .cornerRadius(30)
+                        }
+                        Spacer()
+                    })
+                    .listRowBackground(Color.clear)
+                } else {
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            // Cancel action
+                            dismiss()
+                        }) {
+                            Text("Back")
+                                .frame(width: 100)
+                                .padding()
+                                .background(Color(.systemBlue).opacity(0.2))
+                                .foregroundStyle(.black.opacity(0.6))
+                                .cornerRadius(30)
+                        }
+                        Spacer()
                     }
-                    Button(action: {
-                        // Cancel action
-                        dismiss()
-                    }) {
-                        Text("Cancel")
-                            .frame(width: 100)
-                            .padding()
-                            .background(Color(.systemPink).opacity(0.2))
-                            .foregroundStyle(.black.opacity(0.6))
-                            .cornerRadius(30)
-                    }
-                    Spacer()
-                })
-                .listRowBackground(Color.clear)
+                }
+                
             }
             .navigationTitle("답변하기")
             .navigationBarTitleDisplayMode(.inline)
