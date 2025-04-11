@@ -40,9 +40,3 @@ The project analyzes passenger data based on location, time slots, and demograph
 ## Screenshots
 ![Registration Page](path/to/registration_page_screenshot.png)
 ![Ad Targeting Insights](path/to/ad_targeting_insights_screenshot.png)
-
-## Contributing
-Contributions are welcome! Please fork the repository and submit a pull request.
-
-## License
-This project is licensed under the MIT License.
