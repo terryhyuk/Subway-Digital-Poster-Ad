@@ -70,13 +70,13 @@ The project analyzes passenger data by location, time slot, and demographics, an
 
 ## System Architecture
 
-![System Architecture](image/system_architecture/system_architecture.png)
+![System Architecture](image/system_architecture.png)
 
 ---
 
 ## Screen Flow Diagram
 
-![Screen Flow Diagram](image/SFD/SFD.png)
+![Screen Flow Diagram](image/SFD.png)
 
 ---
 
@@ -84,8 +84,7 @@ The project analyzes passenger data by location, time slot, and demographics, an
 
 ### Main Screenshots (Features I Developed)
 
-![Signup Page](image/singup/signup_page.png)
-<!-- 실제 캡처 이미지명으로 교체하세요 -->
+![Signup Page](image/singup.png)
 
 ---
 
